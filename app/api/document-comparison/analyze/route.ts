@@ -4,18 +4,37 @@ import { createAnalysisSession, updateAnalysisSession, getRuleById, getDocumentG
 import { exportTrackerClient } from '@/lib/export-tracker-client';
 import { AnalysisMode } from '@/lib/types';
 
-// Helper function to download file from Supabase and convert to base64
-async function downloadAndConvertToBase64(fileUrl: string): Promise<string> {
+// Helper function to download file from Supabase Storage and convert to base64
+async function downloadFileFromStorage(filePath: string): Promise<string> {
   try {
-    const response = await fetch(fileUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to download file: ${response.statusText}`);
+    console.log(`[v0] Downloading from storage: ${filePath}`);
+    
+    // Create Supabase client
+    const supabase = await createServerSupabaseClient();
+    
+    // Download file directly from storage
+    const { data, error } = await supabase.storage
+      .from('documents')
+      .download(filePath);
+    
+    if (error) {
+      console.error(`[v0] Storage download error:`, error);
+      throw new Error(`Failed to download from storage: ${error.message}`);
     }
-    const arrayBuffer = await response.arrayBuffer();
+    
+    if (!data) {
+      throw new Error('No data received from storage');
+    }
+    
+    // Convert Blob to base64
+    const arrayBuffer = await data.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
-    return buffer.toString('base64');
+    const base64 = buffer.toString('base64');
+    
+    console.log(`[v0] Successfully downloaded and converted to base64 (size: ${base64.length} chars)`);
+    return base64;
   } catch (error) {
-    console.error('Error downloading file:', error);
+    console.error('[v0] Error downloading file from storage:', error);
     throw error;
   }
 }
@@ -253,13 +272,22 @@ export async function POST(request: Request) {
             throw new Error('Some requested documents not found in group');
           }
 
-          // Download files and convert to base64 data
-          console.log('[v0] Downloading files and converting to base64...');
+          // Download files from Supabase Storage and convert to base64 data
+          console.log('[v0] Downloading files from Supabase Storage...');
           const documentsWithData = [];
           for (const doc of selectedDocuments) {
             try {
-              console.log(`[v0] Downloading: ${doc.file_name}`);
-              const base64Data = await downloadAndConvertToBase64(doc.file_url);
+              console.log(`[v0] Processing: ${doc.file_name}`);
+              
+              // Extract storage path from file_url
+              // file_url format: https://xxx.supabase.co/storage/v1/object/public/documents/path/to/file.pdf
+              const url = new URL(doc.file_url);
+              const pathParts = url.pathname.split('/documents/');
+              const storagePath = pathParts[1]; // Get path after /documents/
+              
+              console.log(`[v0] Storage path: ${storagePath}`);
+              
+              const base64Data = await downloadFileFromStorage(storagePath);
               const mimeType = getMimeType(doc.file_name);
 
               documentsWithData.push({
@@ -269,6 +297,8 @@ export async function POST(request: Request) {
                 base64Data,
                 mimeType,
               });
+              
+              console.log(`[v0] ✓ Successfully processed ${doc.file_name}`);
             } catch (downloadError) {
               console.error(`[v0] Failed to download ${doc.file_name}:`, downloadError);
               throw new Error(`Failed to download file: ${doc.file_name}`);
