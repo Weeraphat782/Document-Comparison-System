@@ -198,7 +198,7 @@ export const COMMON_EXTRACTION_FIELDS = [
 
   // Product/Service Information
   'product_name', 'product_description', 'quantity', 'unit_price',
-  'total_value', 'item_number', 'sku', 'category',
+  'item_number', 'sku', 'category',
 
   // Legal Information
   'party_a', 'party_b', 'witness_name', 'notary_name', 'judge_name',

@@ -4,6 +4,36 @@ import { createAnalysisSession, updateAnalysisSession, getRuleById, getDocumentG
 import { exportTrackerClient } from '@/lib/export-tracker-client';
 import { AnalysisMode } from '@/lib/types';
 
+// Helper function to download file from Supabase and convert to base64
+async function downloadAndConvertToBase64(fileUrl: string): Promise<string> {
+  try {
+    const response = await fetch(fileUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to download file: ${response.statusText}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    return buffer.toString('base64');
+  } catch (error) {
+    console.error('Error downloading file:', error);
+    throw error;
+  }
+}
+
+// Helper function to get MIME type from file extension
+function getMimeType(fileName: string): string {
+  const ext = fileName.toLowerCase().split('.').pop();
+  const mimeTypes: Record<string, string> = {
+    'pdf': 'application/pdf',
+    'png': 'image/png',
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'gif': 'image/gif',
+    'webp': 'image/webp',
+  };
+  return mimeTypes[ext || ''] || 'application/pdf';
+}
+
 export async function POST(request: Request) {
   try {
     // Authenticate user
@@ -210,7 +240,7 @@ export async function POST(request: Request) {
           user.id
         );
       } else if (mode === 'uploaded') {
-        // New uploaded mode - need to get document URLs from our database
+        // New uploaded mode - download files and send as base64 data
         try {
           const uploadedDocuments = await getUploadedDocuments(group_id);
 
@@ -223,14 +253,33 @@ export async function POST(request: Request) {
             throw new Error('Some requested documents not found in group');
           }
 
-          // Get document URLs for analysis
-          const documentUrls = selectedDocuments.map(doc => doc.file_url);
+          // Download files and convert to base64 data
+          console.log('[v0] Downloading files and converting to base64...');
+          const documentsWithData = [];
+          for (const doc of selectedDocuments) {
+            try {
+              console.log(`[v0] Downloading: ${doc.file_name}`);
+              const base64Data = await downloadAndConvertToBase64(doc.file_url);
+              const mimeType = getMimeType(doc.file_name);
 
-          // Call Export Tracker with document URLs instead of IDs
-          // Note: This assumes Export Tracker has an endpoint for analyzing uploaded files
-          // For now, we'll use the existing endpoint but pass URLs in a different format
+              documentsWithData.push({
+                id: doc.id,
+                name: doc.file_name,
+                type: doc.document_type || 'other',
+                base64Data,
+                mimeType,
+              });
+            } catch (downloadError) {
+              console.error(`[v0] Failed to download ${doc.file_name}:`, downloadError);
+              throw new Error(`Failed to download file: ${doc.file_name}`);
+            }
+          }
+
+          console.log(`[v0] Successfully prepared ${documentsWithData.length} documents for analysis`);
+
+          // Call Export Tracker with document data instead of URLs
           analysisResult = await exportTrackerClient.analyzeUploadedDocuments(
-            documentUrls,
+            documentsWithData,
             rule_id,
             user.id,
             group_id

@@ -111,11 +111,11 @@ export class ExportTrackerClient {
 
   /**
    * Analyze uploaded documents using Export Tracker's AI analysis
-   * Use the main analyze endpoint with document_urls parameter
+   * Send files as base64 data instead of URLs
    */
-  async analyzeUploadedDocuments(documentUrls: string[], ruleId: string, userId: string, groupId: string): Promise<any> {
+  async analyzeUploadedDocuments(documents: Array<{id: string, name: string, type: string, base64Data: string, mimeType: string}>, ruleId: string, userId: string, groupId: string): Promise<any> {
     try {
-      // Send to main analyze endpoint with document_urls instead of document_ids
+      // Send to main analyze endpoint with document data instead of URLs
       const response = await fetch(`${this.baseUrl}/api/document-comparison/analyze`, {
         method: 'POST',
         headers: {
@@ -123,7 +123,7 @@ export class ExportTrackerClient {
         },
         body: JSON.stringify({
           quotation_id: `UPLOADED_GROUP_${groupId}`,
-          document_urls: documentUrls,  // Send signed URLs as document_urls
+          documents: documents,  // Send document data with base64 content
           rule_id: ruleId,
           user_id: userId,
           analysis_mode: 'uploaded',  // Flag to indicate this is uploaded mode
