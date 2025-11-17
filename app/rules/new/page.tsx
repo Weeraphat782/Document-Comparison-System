@@ -9,31 +9,18 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, Plus, X, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { COMMON_DOCUMENT_TYPES, COMMON_EXTRACTION_FIELDS } from '@/lib/types';
+import { COMMON_EXTRACTION_FIELDS } from '@/lib/types';
 
 export default function NewRulePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [documentTypes, setDocumentTypes] = useState<string[]>([]);
   const [extractionFields, setExtractionFields] = useState<string[]>([]);
   const [comparisonInstructions, setComparisonInstructions] = useState('');
   const [criticalChecks, setCriticalChecks] = useState<string[]>([]);
-  const [newDocType, setNewDocType] = useState('');
   const [newField, setNewField] = useState('');
   const [newCheck, setNewCheck] = useState('');
-
-  function addDocumentType() {
-    if (newDocType.trim() && !documentTypes.includes(newDocType.trim())) {
-      setDocumentTypes([...documentTypes, newDocType.trim()]);
-      setNewDocType('');
-    }
-  }
-
-  function removeDocumentType(index: number) {
-    setDocumentTypes(documentTypes.filter((_, i) => i !== index));
-  }
 
   function addField() {
     if (newField.trim() && !extractionFields.includes(newField.trim())) {
@@ -55,12 +42,6 @@ export default function NewRulePage() {
 
   function removeCheck(index: number) {
     setCriticalChecks(criticalChecks.filter((_, i) => i !== index));
-  }
-
-  function addSuggestedDocumentType(type: string) {
-    if (!documentTypes.includes(type)) {
-      setDocumentTypes([...documentTypes, type]);
-    }
   }
 
   function addSuggestedField(field: string) {
@@ -86,7 +67,6 @@ export default function NewRulePage() {
         body: JSON.stringify({
           name: name.trim(),
           description: description.trim(),
-          document_types: documentTypes,
           extraction_fields: extractionFields,
           comparison_instructions: comparisonInstructions.trim(),
           critical_checks: criticalChecks,
@@ -149,67 +129,6 @@ export default function NewRulePage() {
                 rows={2}
               />
             </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Document Types</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Types of documents this rule can analyze
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-2">
-              <Input
-                value={newDocType}
-                onChange={(e) => setNewDocType(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addDocumentType())}
-                placeholder="e.g., contract, invoice, certificate"
-              />
-              <Button type="button" onClick={addDocumentType}>
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium mb-2 block">Suggested Types:</Label>
-              <div className="flex flex-wrap gap-1">
-                {COMMON_DOCUMENT_TYPES.map((type) => (
-                  <Button
-                    key={type}
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => addSuggestedDocumentType(type)}
-                    disabled={documentTypes.includes(type)}
-                    className="text-xs h-6"
-                  >
-                    {type}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {documentTypes.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {documentTypes.map((type, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 bg-slate-100 text-slate-700 px-3 py-1 rounded"
-                  >
-                    <span className="text-sm">{type}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeDocumentType(index)}
-                      className="text-slate-500 hover:text-slate-700"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
           </CardContent>
         </Card>
 
