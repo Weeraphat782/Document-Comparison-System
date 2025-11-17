@@ -145,7 +145,7 @@ export function DocumentSelector({ onAnalyze, isAnalyzing, mode, quotationId, gr
   return (
     <div className="space-y-6">
       {/* Rule Selection */}
-      <Card>
+      <Card data-tour="rule-selector">
         <CardHeader>
           <CardTitle>1. Select Comparison Rule</CardTitle>
           <CardDescription>Choose how documents should be compared and verified</CardDescription>
@@ -185,7 +185,7 @@ export function DocumentSelector({ onAnalyze, isAnalyzing, mode, quotationId, gr
       </Card>
 
       {/* Document Selection */}
-      <Card>
+      <Card data-tour="document-list">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -264,6 +264,7 @@ export function DocumentSelector({ onAnalyze, isAnalyzing, mode, quotationId, gr
                 disabled={selectedDocuments.size < 2 || isAnalyzing || !selectedRuleId}
                 size="lg"
                 className="gap-2"
+                data-tour="analyze-button"
               >
                 {isAnalyzing ? (
                   <>

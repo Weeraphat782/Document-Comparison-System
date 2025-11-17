@@ -8,6 +8,7 @@ import { ComparisonResults } from "@/components/comparison-results"
 import { ModeSelector } from "@/components/mode-selector"
 import { DocumentGroupManager } from "@/components/document-group-manager"
 import { FileUploader } from "@/components/file-uploader"
+import { TutorialGuide } from "@/components/tutorial-guide"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -182,9 +183,16 @@ export default function DocumentComparisonPage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mx-auto max-w-7xl space-y-8">
+          {/* Tutorial Guide Buttons */}
+          <div className="flex justify-end">
+            <TutorialGuide />
+          </div>
+
           {/* Mode Selector */}
           {(!quotationId && !selectedGroupId) && (
-            <ModeSelector selectedMode={mode} onModeChange={handleModeChange} />
+            <div data-tour="mode-selector">
+              <ModeSelector selectedMode={mode} onModeChange={handleModeChange} />
+            </div>
           )}
 
           {/* Quotation Mode: Document Set ID Input */}
@@ -203,6 +211,7 @@ export default function DocumentComparisonPage() {
                         role="combobox"
                         aria-expanded={comboboxOpen}
                         className="flex-1 justify-between"
+                        data-tour="quotation-input"
                       >
                         {inputQuotationId || "Select or enter quotation ID..."}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -255,7 +264,11 @@ export default function DocumentComparisonPage() {
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  <Button onClick={handleQuotationSubmit} disabled={!inputQuotationId.trim()}>
+                  <Button 
+                    onClick={handleQuotationSubmit} 
+                    disabled={!inputQuotationId.trim()}
+                    data-tour="quotation-load"
+                  >
                     Load Documents
                   </Button>
                 </div>
@@ -270,15 +283,17 @@ export default function DocumentComparisonPage() {
 
           {/* Uploaded Mode: Document Group Management */}
           {mode === 'uploaded' && !selectedGroupId && (
-            <DocumentGroupManager
-              selectedGroupId={selectedGroupId}
-              onGroupSelect={handleGroupSelect}
-            />
+            <div data-tour="group-manager">
+              <DocumentGroupManager
+                selectedGroupId={selectedGroupId}
+                onGroupSelect={handleGroupSelect}
+              />
+            </div>
           )}
 
           {/* Uploaded Mode: File Uploader (Optional - Always visible but collapsible) */}
           {mode === 'uploaded' && selectedGroupId && !analysisResults && (
-            <Card>
+            <Card data-tour="file-uploader">
               <CardHeader>
                 <CardTitle className="text-lg">Upload Additional Documents (Optional)</CardTitle>
                 <CardDescription>

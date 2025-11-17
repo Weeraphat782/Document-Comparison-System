@@ -190,7 +190,7 @@ export function DocumentGroupManager({ selectedGroupId, onGroupSelect }: Documen
 
         <Dialog open={createDialogOpen || !!editingGroup} onOpenChange={(open) => !open && closeDialogs()}>
           <DialogTrigger asChild>
-            <Button onClick={() => setCreateDialogOpen(true)}>
+            <Button onClick={() => setCreateDialogOpen(true)} data-tour="create-group">
               <Plus className="h-4 w-4 mr-2" />
               Create Group
             </Button>
