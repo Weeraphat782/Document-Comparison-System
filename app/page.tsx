@@ -207,45 +207,6 @@ export default function DocumentComparisonPage() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mx-auto max-w-7xl space-y-8">
-          {/* Welcome Card - Show when no documents are selected */}
-          {mode === 'quotation' && !quotationId && (
-            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
-              <CardHeader>
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                    <Sparkles className="h-6 w-6 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-xl">Welcome to AI Document Verification</CardTitle>
-                    <CardDescription className="mt-2 text-base">
-                      Analyze documents from Export Tracker quotations. Our AI will verify consistency across multiple
-                      documents and provide instant feedback on critical issues, discrepancies, and compliance checks.
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-            </Card>
-          )}
-
-          {mode === 'uploaded' && !selectedGroupId && (
-            <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
-              <CardHeader>
-                <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                    <Sparkles className="h-6 w-6 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-xl">Welcome to AI Document Verification</CardTitle>
-                    <CardDescription className="mt-2 text-base">
-                      Create document groups and upload your own files for analysis. Our AI will verify consistency across multiple
-                      documents and provide instant feedback on critical issues, discrepancies, and compliance checks.
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-            </Card>
-          )}
-
           {/* Mode Selector */}
           {(!quotationId && !selectedGroupId) && (
             <ModeSelector selectedMode={mode} onModeChange={handleModeChange} />
