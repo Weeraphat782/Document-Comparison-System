@@ -179,31 +179,6 @@ export default function DocumentComparisonPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Header */}
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-                <FileSearch className="h-6 w-6" />
-              </div>
-                <div>
-                  <h1 className="text-2xl font-bold tracking-tight">Document Analysis Service</h1>
-                  <p className="text-sm text-muted-foreground">AI-powered cross-document verification for any document type</p>
-                </div>
-            </div>
-            {user && (
-              <Link href="/rules">
-                <Button variant="outline" className="gap-2">
-                  <Settings className="h-4 w-4" />
-                  Manage Rules
-                </Button>
-              </Link>
-            )}
-          </div>
-        </div>
-      </header>
-
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mx-auto max-w-7xl space-y-8">
