@@ -115,23 +115,39 @@ export function DocumentGroupManager({ selectedGroupId, onGroupSelect }: Documen
   }
 
   async function handleDeleteGroup(groupId: string) {
+    console.log('[DocumentGroupManager] Starting delete for group:', groupId)
+    
     try {
       const response = await fetch(`/api/document-groups/${groupId}`, {
         method: 'DELETE'
       })
 
+      console.log('[DocumentGroupManager] Delete response status:', response.status)
+
       if (response.ok) {
-        setGroups(prev => prev.filter(g => g.id !== groupId))
+        console.log('[DocumentGroupManager] Delete successful, updating UI')
+        
+        // Update UI immediately
+        setGroups(prev => {
+          const newGroups = prev.filter(g => g.id !== groupId)
+          console.log('[DocumentGroupManager] Groups before:', prev.length, 'after:', newGroups.length)
+          return newGroups
+        })
+        
+        // Clear selection if deleting selected group
         if (selectedGroupId === groupId) {
+          console.log('[DocumentGroupManager] Clearing selected group')
           onGroupSelect('')
         }
+        
         toast.success('Document group deleted successfully')
       } else {
         const error = await response.json()
+        console.error('[DocumentGroupManager] Delete failed:', error)
         throw new Error(error.error || 'Failed to delete group')
       }
     } catch (error) {
-      console.error('Error deleting group:', error)
+      console.error('[DocumentGroupManager] Error deleting group:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to delete group')
     }
   }
@@ -300,10 +316,13 @@ export function DocumentGroupManager({ selectedGroupId, onGroupSelect }: Documen
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => handleDeleteGroup(group.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleDeleteGroup(group.id)
+                            }}
+                            className="bg-red-600 text-white hover:bg-red-700"
                           >
-                            Delete Group
+                            Delete
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>

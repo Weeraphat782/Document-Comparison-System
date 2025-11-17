@@ -25,9 +25,10 @@ interface DocumentSelectorProps {
   mode: AnalysisMode
   quotationId?: string  // For quotation mode
   groupId?: string      // For uploaded mode
+  refreshTrigger?: number  // Used to trigger refresh after upload
 }
 
-export function DocumentSelector({ onAnalyze, isAnalyzing, mode, quotationId, groupId }: DocumentSelectorProps) {
+export function DocumentSelector({ onAnalyze, isAnalyzing, mode, quotationId, groupId, refreshTrigger }: DocumentSelectorProps) {
   const [documents, setDocuments] = useState<DocumentSource[]>([])
   const [selectedDocuments, setSelectedDocuments] = useState<Set<string>>(new Set())
   const [rules, setRules] = useState<Rule[]>([])
@@ -39,7 +40,7 @@ export function DocumentSelector({ onAnalyze, isAnalyzing, mode, quotationId, gr
   useEffect(() => {
     loadDocuments()
     loadRules()
-  }, [mode, quotationId, groupId])
+  }, [mode, quotationId, groupId, refreshTrigger])
 
   async function loadRules() {
     setLoadingRules(true)

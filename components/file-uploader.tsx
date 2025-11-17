@@ -398,11 +398,10 @@ export function FileUploader({
 
       {/* Upload Summary */}
       {hasCompletedUploads && (
-        <Alert>
-          <CheckCircle className="h-4 w-4" />
-          <AlertDescription>
-            {uploads.filter(u => u.status === 'completed').length} of {uploads.length} files uploaded successfully.
-            You can now proceed to select documents for analysis.
+        <Alert className="border-green-200 bg-green-50">
+          <CheckCircle className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-800">
+            ✓ {uploads.filter(u => u.status === 'completed').length} of {uploads.length} files uploaded successfully!
           </AlertDescription>
         </Alert>
       )}

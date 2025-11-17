@@ -8,7 +8,7 @@ import { ComparisonResults } from "@/components/comparison-results"
 import { ModeSelector } from "@/components/mode-selector"
 import { DocumentGroupManager } from "@/components/document-group-manager"
 import { FileUploader } from "@/components/file-uploader"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
@@ -53,6 +53,7 @@ export default function DocumentComparisonPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisResults, setAnalysisResults] = useState<AnalysisResponse | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [documentRefreshTrigger, setDocumentRefreshTrigger] = useState(0)
 
   useEffect(() => {
     const qId = searchParams.get("quotation_id")
@@ -339,15 +340,26 @@ export default function DocumentComparisonPage() {
             />
           )}
 
-          {/* Uploaded Mode: File Uploader */}
+          {/* Uploaded Mode: File Uploader (Optional - Always visible but collapsible) */}
           {mode === 'uploaded' && selectedGroupId && !analysisResults && (
-            <FileUploader
-              groupId={selectedGroupId}
-              onUploadComplete={(documents) => {
-                // Optionally refresh document selector
-                console.log('Documents uploaded:', documents.length)
-              }}
-            />
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Upload Additional Documents (Optional)</CardTitle>
+                <CardDescription>
+                  You can upload new documents or proceed with existing documents in this group
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FileUploader
+                  groupId={selectedGroupId}
+                  onUploadComplete={(documents) => {
+                    console.log('Documents uploaded:', documents.length)
+                    // Trigger document selector refresh
+                    setDocumentRefreshTrigger(prev => prev + 1)
+                  }}
+                />
+              </CardContent>
+            </Card>
           )}
 
           {/* Error Alert */}
@@ -396,6 +408,7 @@ export default function DocumentComparisonPage() {
                 mode={mode}
                 quotationId={quotationId}
                 groupId={selectedGroupId}
+                refreshTrigger={documentRefreshTrigger}
               />
             </div>
           )}
