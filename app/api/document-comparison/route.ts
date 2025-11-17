@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getCurrentUser } from '@/lib/db';
-import { exportTrackerAPI } from '@/lib/export-tracker-client';
+import { exportTrackerClient } from '@/lib/export-tracker-client';
 
 export async function GET(request: Request) {
   try {
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     console.log('Fetching documents for access code:', accessCode);
 
     // เรียก Export Tracker API เพื่อดึงข้อมูลเอกสาร
-    const documentData = await exportTrackerAPI.getDocuments(accessCode);
+    const documentData = await exportTrackerClient.getDocuments(accessCode);
 
     return NextResponse.json(documentData);
 

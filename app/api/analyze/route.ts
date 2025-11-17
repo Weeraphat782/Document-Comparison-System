@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { getCurrentUser, createAnalysisSession, updateAnalysisSession } from '@/lib/db';
-import { exportTrackerAPI } from '@/lib/export-tracker-client';
+import { exportTrackerClient } from '@/lib/export-tracker-client';
 import { ComparisonRule } from '@/lib/types';
 
 // Service Role Client
@@ -109,7 +109,7 @@ export async function POST(request: Request) {
     try {
       // 3. เรียก Export Tracker API เพื่อวิเคราะห์
       console.log('Calling Export Tracker API for analysis...');
-      const analysisResult = await exportTrackerAPI.analyzeDocuments({
+      const analysisResult = await exportTrackerClient.analyzeDocuments({
         document_ids,
         rule_id: 'export-tracker-rule', // ใช้ rule ID เฉพาะสำหรับ Export Tracker
         access_code,
